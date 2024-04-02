@@ -4,19 +4,35 @@ from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 from passlib.context import CryptContext
-
+from app.core.config import settings 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+# def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+#     to_encode = data.copy()
+#     if expires_delta:
+#         expire = datetime.utcnow() + expires_delta
+#     else:
+#         expire = datetime.utcnow() + timedelta(minutes=15)
+#     to_encode.update({"exp": expire})
+#     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+#     return encoded_jwt
+# app/core/security.py
+
+ # Ensure this import path is correct
+
+def create_access_token(*, data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
     return encoded_jwt
+
+# Add more security related functions here
+
 
 def verify_token(token: str, credentials_exception):
     try:
